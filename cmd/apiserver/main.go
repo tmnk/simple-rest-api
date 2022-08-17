@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/BurntSushi/toml"
@@ -28,5 +27,4 @@ func main() {
 	if err := s.Start(); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Hello World")
 }
