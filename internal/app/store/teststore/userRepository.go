@@ -30,3 +30,13 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	}
 	return u, nil
 }
+
+func (r *UserRepository) FindId(id int) (*model.User, error) {
+	for _, v := range r.users {
+		if v.ID == id {
+			return v, nil
+		}
+	}
+	return nil, store.ErrRecordNotFound
+
+}

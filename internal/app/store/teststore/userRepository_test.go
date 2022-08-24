@@ -21,3 +21,13 @@ func TestUserRepository_FindByEmail(t *testing.T) {
 	_, err := s.User().FindByEmail(email)
 	assert.EqualError(t, err, store.ErrRecordNotFound.Error())
 }
+
+func TestUserRepository_FindId(t *testing.T) {
+	s := teststore.New()
+	u := model.TestUser(t)
+	s.User().Create(u)
+	_, err := s.User().FindId(u.ID + 1)
+	assert.EqualError(t, err, store.ErrRecordNotFound.Error())
+	_, err = s.User().FindId(u.ID)
+	assert.NoError(t, err)
+}
