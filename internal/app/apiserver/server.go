@@ -51,6 +51,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 		}
 		if err := s.store.User().Create(u); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
 		}
 		u.Sanitize()
 		s.respond(w, r, http.StatusCreated, u)
