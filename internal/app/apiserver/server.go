@@ -6,9 +6,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/sirupsen/logrus"
 	"github.com/tmnk/simple-rest-api/internal/app/model"
 	"github.com/tmnk/simple-rest-api/internal/app/store"
+)
+
+const (
+	sessionName = "smallStepForDeveloper"
 )
 
 var (
@@ -16,16 +21,18 @@ var (
 )
 
 type server struct {
-	router *mux.Router
-	logger *logrus.Logger
-	store  store.Store
+	router        *mux.Router
+	logger        *logrus.Logger
+	store         store.Store
+	sessionsStore sessions.Store
 }
 
-func newServer(store store.Store) *server {
+func newServer(store store.Store, sessionsStore sessions.Store) *server {
 	s := &server{
-		router: mux.NewRouter(),
-		logger: logrus.New(),
-		store:  store,
+		router:        mux.NewRouter(),
+		logger:        logrus.New(),
+		store:         store,
+		sessionsStore: sessionsStore,
 	}
 	s.configureRouter()
 	return s
@@ -78,6 +85,16 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 		u, err := s.store.User().FindByEmail(req.Email)
 		if err != nil || !u.ComparePassword(req.Password) {
 			s.error(w, r, http.StatusUnauthorized, errIncorectEmailOrPassword)
+			return
+		}
+		session, err := s.sessionsStore.Get(r, sessionName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		session.Values["user_id"] = u.ID
+		if err := s.sessionsStore.Save(r, w, session); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 		s.respond(w, r, http.StatusOK, nil)

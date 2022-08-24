@@ -1,5 +1,5 @@
 bind_addr = ":8080"
 log_level = "debug"
-
+session_key = "d4ynq34ychcuywey78o248xuy89ncxy7894c7yacy78xaygwny378tb"
 database_url = "postgres://postgres:101003@127.0.0.1:5433/restapi_dev"
 test_database_url = "postgres://postgres:101003@127.0.0.1:5433/restapi_test"
